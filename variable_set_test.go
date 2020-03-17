@@ -9,6 +9,7 @@ import (
 
 func TestVariableSet(t *testing.T) {
 
+	_ = os.Setenv("ENV_TEST", "this is string")
 	_ = os.Setenv("ENV_TEST_STRING", "this is string")
 	_ = os.Setenv("ENV_TEST_INT", "100")
 

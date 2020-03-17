@@ -143,24 +143,34 @@ func (_ *VariableSet) fprintf(w io.Writer, format string, args ...interface{}) {
 	_, _ = fmt.Fprintf(w, format, args...)
 }
 
-func (_ *VariableSet) lookup(environments []string, key string) (string, bool) {
+func (set *VariableSet) lookup(environments []string, key string) (string, bool) {
 
 	for _, pair := range environments {
 
-		if !strings.HasPrefix(pair, key) {
+		k, v, err := set.splitKeyValue(pair)
+		if err != nil {
 			continue
 		}
 
-		for i := 0; i < len(pair); i++ {
-			if pair[i] == '=' {
-				return pair[i+1:], true
-			}
+		if k == key {
+			return v, true
 		}
-
-		return "", false
 	}
 
 	return "", false
+}
+
+func (_ *VariableSet) splitKeyValue(s string) (key string, value string, err error) {
+
+	for i := 0; i < len(s); i++ {
+		if s[i] == '=' {
+			key = s[:i]
+			value = s[i+1:]
+			return
+		}
+	}
+
+	return "", "", fmt.Errorf("invalid format `%s`", s)
 }
 
 func (set *VariableSet) sortedKeys() []string {
